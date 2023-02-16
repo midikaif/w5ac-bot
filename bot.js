@@ -1,4 +1,6 @@
 const { REST, Routes } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
+
 const fs = require('fs');
 //const col = require("colors");
 
@@ -25,7 +27,7 @@ const rest = new REST({ version: '10' }).setToken(configFile.TOKEN);
 })();
 
 const { Client, GatewayIntentBits } = require('discord.js');
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -39,4 +41,25 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-client.login(configFile.TOKEN);
+client.on('messageDelete', async message => {
+    console.log("del");
+    try {
+        if (message.author.bot) return;
+        if (message.content === '') return;
+        let channel = client.channels.cache.find(ch => ch.name === configFile.LOG_CHAN);
+        const embed = new EmbedBuilder()
+            .setColor(0xFF0000)
+            .setTitle(':wastebasket: Message Delete in #' + message.channel.name)
+            .setAuthor({ name: message.author.username})
+            .setDescription('Deleted on ' + new Date().toString())
+            .addFields({name: 'Message content', value: "```" + message.content + "```"});
+        channel.send({ embeds: [embed] });
+    } catch (e) {
+        console.error(e);
+    }
+});
+
+client.login(configFile.TOKEN).catch(function() {
+    console.error('Login failed. The token that you put in is most likely invalid.');
+    process.exit(1);
+});
