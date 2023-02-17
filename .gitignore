@@ -4,6 +4,7 @@
 # Secrests
 /secrets.json
 /secrets.txt
+/secrets_5XB.json
 
 # NPM
 /node_modules/
