@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Events, GatewayIntentBits, REST, Routes, EmbedBuilder, Collection } = require('discord.js');
 
-let configFile = JSON.parse(fs.readFileSync('secrets_5XB.json', 'utf8'));
+let configFile = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 client.commands = new Collection();
