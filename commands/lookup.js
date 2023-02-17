@@ -9,10 +9,11 @@ module.exports = {
             .setDescription('The callsign to return')
             .setRequired(true)),
     async execute(interaction) {
+        await interaction.deferReply();
         const get = await fetch(`http://api.hamdb.org/v1/${interaction.options.getString('call')}/json/W5AC`).then((res) => res.json());
 
         if (get.hamdb.callsign.call === "NOT_FOUND") {
-            interaction.reply({content: `Call sign ${interaction.options.getString('call')} not found in HamDB!`});
+            await interaction.editReply({content: `Call sign ${interaction.options.getString('call')} not found in HamDB!`});
             return;
         }
         // Handle the name correctly
@@ -69,6 +70,6 @@ module.exports = {
                 {name: 'Grid: ', value: get.hamdb.callsign.grid, inline: true },
             )
             .setTimestamp()
-        interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     },
 };
