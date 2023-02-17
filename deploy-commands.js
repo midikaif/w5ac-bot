@@ -1,5 +1,5 @@
 const { REST, Routes } = require('discord.js');
-const { clientId, guildId, token } = require('./secrets.json');
+const { clientId, guildId, token } = require('./secrets_5XB.json');
 const fs = require('node:fs');
 
 const commands = [];
