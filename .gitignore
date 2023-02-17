@@ -1,2 +1,10 @@
-/node_modules/
+# Editor Files
+*.code-workspace
+
+# Secrests
 /secrets.json
+/secrets.txt
+
+# NPM
+/node_modules/
+package.json
