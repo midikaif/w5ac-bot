@@ -64,10 +64,10 @@ module.exports = {
             .setAuthor({ name: "HamDB Database"})
             .setURL(`http://hamdb.org/${get.hamdb.callsign.call}`)
             .addFields(
-                {name: 'Name: ', value: ham_name},
+                { name: 'Name: ', value: ham_name },
                 { name: 'Class: ', value: license_class, inline: true },
                 { name: 'Status: ', value: ham_status, inline: true },
-                {name: 'Grid: ', value: get.hamdb.callsign.grid, inline: true },
+                { name: 'Grid: ', value: get.hamdb.callsign.grid, inline: true },
             )
             .setTimestamp()
         await interaction.editReply({ embeds: [embed] });

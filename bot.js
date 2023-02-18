@@ -44,17 +44,17 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 client.on('messageDelete', async message => {
-    console.log("del");
     try {
         if (message.author.bot) return;
         if (message.content === '') return;
-        let channel = client.channels.cache.find(ch => ch.name === configFile.log_chan);
-        const embed = new EmbedBuilder()
+
+		const embed = new EmbedBuilder()
             .setColor(0xFF0000)
-            .setTitle(':wastebasket: Message Delete in #' + message.channel.name)
-            .setAuthor({ name: message.author.username})
-            .setDescription('Deleted on ' + new Date().toString())
-            .addFields({name: 'Message content', value: "```" + message.content + "```"});
+            .setAuthor({ name: message.author.tag})
+			.setTimestamp()
+            .addFields({name: `Message from ${message.member.nickname} deleted in <#${message.channel.id}>`, value: message.content});
+
+		let channel = client.channels.cache.find(ch => ch.name === configFile.log_chan);
         channel.send({ embeds: [embed] });
     } catch (e) {
         console.error(e);
