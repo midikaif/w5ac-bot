@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Events, GatewayIntentBits, REST, Routes, EmbedBuilder, Collection } = require('discord.js');
 
-let configFile = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
+let configFile = JSON.parse(fs.readFileSync('secrets_5XB.json', 'utf8'));
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 client.commands = new Collection();
@@ -41,6 +41,16 @@ client.on(Events.InteractionCreate, async interaction => {
 		console.error(error);
 		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 	}
+});
+
+client.on('guildMemberAdd', async member => {
+	const mod_embed = new EmbedBuilder()
+		.setColor(0xFF0000)
+		.setTimestamp()
+		.addFields({name: `New Member Joined!`, value: member.tag});
+
+	let channel = client.channels.cache.find(ch => ch.name === configFile.log_chan);
+	channel.send({ embeds: [mod_embed] });
 });
 
 client.on('messageDelete', async message => {
