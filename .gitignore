@@ -1,5 +1,6 @@
 # Editor Files
 *.code-workspace
+.DS_Store
 
 # Secrests
 /secrets.json
