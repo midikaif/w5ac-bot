@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Events, GatewayIntentBits, REST, Routes, EmbedBuilder, Collection } = require('discord.js');
+const examQuestion = require('./scheduled_scripts/exam-question');
 
 let configFile = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
 
@@ -23,28 +24,33 @@ for (const file of commandFiles) {
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+	examQuestion.init(client, configFile);
 });
 
 client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
-
-	const command = interaction.client.commands.get(interaction.commandName);
-
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
-		return;
+	if(interaction.isChatInputCommand()) {
+		const command = interaction.client.commands.get(interaction.commandName);
+		if (!command) {
+			console.error(`No command matching ${interaction.commandName} was found.`);
+			return;
+		}
+		try {
+			await command.execute(interaction);
+		} catch (error) {
+			console.error(error);
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		}
+	} else if(interaction.isButton()) {
+		if(interaction.customId.includes('exam')) {
+			examQuestion.answers(interaction);
+		}
 	}
 
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-	}
+	
 });
 
 client.on('messageDelete', async message => {
-    console.log("del");
+    console.log('del');
     try {
         if (message.author.bot) return;
         if (message.content === '') return;
@@ -54,7 +60,7 @@ client.on('messageDelete', async message => {
             .setTitle(':wastebasket: Message Delete in #' + message.channel.name)
             .setAuthor({ name: message.author.username})
             .setDescription('Deleted on ' + new Date().toString())
-            .addFields({name: 'Message content', value: "```" + message.content + "```"});
+            .addFields({name: 'Message content', value: '```' + message.content + '```'});
         channel.send({ embeds: [embed] });
     } catch (e) {
         console.error(e);
