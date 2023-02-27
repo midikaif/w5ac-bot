@@ -1,10 +1,14 @@
 # Editor Files
 *.code-workspace
+.DS_Store
 
 # Secrests
 /secrets.json
 /secrets.txt
 /secrets_5XB.json
+/secrests_W5AC.json
+/resources/exams/questions.json
+/resources/exams/answers.json
 
 # NPM
 /node_modules/
