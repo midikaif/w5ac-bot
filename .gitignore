@@ -1,6 +1,8 @@
 # Editor Files
 *.code-workspace
 .DS_Store
+bot.log
+keep-alive.sh
 
 # Secrests
 /secrets.json
@@ -13,3 +15,4 @@
 # NPM
 /node_modules/
 package.json
+package-lock.json
