@@ -46,7 +46,7 @@ module.exports = {
                     try {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Technician"));
                         await interaction.followUp({ content: 'Successfully removed role!', ephemeral: true });
-                    } catch (e) {
+                    } catch(e) {
                         break;
                     }
                 } else {
@@ -55,7 +55,7 @@ module.exports = {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "General"));
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Extra"));
                         await interaction.followUp({ content: 'Successfully added role!', ephemeral: true });
-                    } catch (e) {
+                    } catch(e) {
                         break;
                     }
                 }
@@ -65,7 +65,7 @@ module.exports = {
                     try {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "General"));
                         await interaction.followUp({ content: 'Successfully removed role!', ephemeral: true });
-                    } catch (e) {
+                    } catch(e) {
                         break;
                     }
                 } else {
@@ -74,7 +74,7 @@ module.exports = {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Technician"));
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Extra"));
                         await interaction.followUp({ content: 'Successfully added role!', ephemeral: true });
-                    } catch (e) {
+                    } catch(e) {
                         break;
                     }
                 }
@@ -84,7 +84,7 @@ module.exports = {
                     try {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Extra"));
                         await interaction.followUp({ content: 'Successfully removed role!', ephemeral: true });
-                    } catch (e) {
+                    } catch(e) {
                         break;
                     }
                 } else {
@@ -93,18 +93,30 @@ module.exports = {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Technician"));
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "General"));
                         await interaction.followUp({ content: 'Successfully added role!', ephemeral: true });
-                    } catch (e) {
+                    } catch(e) {
                         break;
                     }
                 }
                 break;
             case 'role-extra-net':
                 if (interaction.member.roles.cache.has(interaction.guild.roles.cache.find(role => role.name === "Net Controller").id)) {
-                    interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Net Controller"));
-                    await interaction.followUp({ content: 'Successfully removed role!', ephemeral: true });
+                    try {
+                        interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Net Controller"));
+                        await interaction.followUp({ content: 'Successfully removed role!', ephemeral: true });
+                    } catch(e) {
+                        break;
+                    }
                 } else {
-                    interaction.member.roles.add(interaction.guild.roles.cache.find(role => role.name === "Net Controller"));
-                    await interaction.followUp({ content: 'Successfully added role!', ephemeral: true });
+                    try {
+                        if (interaction.member.roles.cache.has(interaction.guild.roles.cache.find(role => role.name === "W5AC Member").id)) {
+                            interaction.member.roles.add(interaction.guild.roles.cache.find(role => role.name === "Net Controller"));
+                            await interaction.followUp({ content: 'Successfully added role!', ephemeral: true });
+                        } else {
+                            await interaction.followUp({ content: 'Only W5AC members can be net controllers', ephemeral: true })
+                        }
+                    } catch(e) {
+                        break;
+                    }
                 }
                 break;
             default:
