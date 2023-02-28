@@ -284,7 +284,7 @@ module.exports = {
                     embedE.setImage('attachment://E5-1.png');
                     let sent = await channel.send({ embeds: [embedE], files: [file], components: [rowE] });
                     idExtra = sent.id;
-                } else if(poolE[randE].toUpperCase().includes('FIGURE E6-1')) {
+                } else if(poolE[randE].question.toUpperCase().includes('FIGURE E6-1')) {
                     const file = new AttachmentBuilder('./resources/exams/E6-1.png');
                     embedE.setImage('attachment://E6-1.png');
                     let sent = await channel.send({ embeds: [embedE], files: [file], components: [rowE] });
