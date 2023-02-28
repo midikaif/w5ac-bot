@@ -6,7 +6,6 @@ const util = require('node:util');
 module.exports = {
     configFile: null,
     client: null,
-    previous: {'idTech': null, 'idGeneral': null, 'idExtra': null},
     init: function(client, config) {
         this.client = client;
         this.configFile = config;
@@ -19,7 +18,7 @@ module.exports = {
         var poolG = JSON.parse(fs.readFileSync('./resources/exams/general.json', 'utf8'));
         var poolE = JSON.parse(fs.readFileSync('./resources/exams/extra.json', 'utf8'));
         
-        const job = new CronJob('0 0 6,12,18 * * *', async function() {
+        const job = new CronJob('0 0 6,18 * * *', async function() {
             try {
                 var questions = JSON.parse(fs.readFileSync('./resources/exams/questions.json', 'utf8'));
                 let oldT = await channel.messages.fetch(questions[questions.length - 1].idTech);
@@ -196,17 +195,17 @@ module.exports = {
                             .setLabel('D')
                             .setStyle(ButtonStyle.Primary),
                     );
-                if(poolT[randT].question.includes('figure T-1')) {
+                if(poolT[randT].question.toUpperCase().includes('FIGURE T-1')) {
                     const file = new AttachmentBuilder('./resources/exams/T-1.png');
                     embedT.setImage('attachment://T-1.png');
                     let sent = await channel.send({ embeds: [embedT], files: [file], components: [rowT] });
                     idTech = sent.id;
-                } else if(poolT[randT].question.includes('figure T-2')) {
+                } else if(poolT[randT].question.toUpperCase().includes('FIGURE T-2')) {
                     const file = new AttachmentBuilder('./resources/exams/T-2.png');
                     embedT.setImage('attachment://T-2.png');
                     let sent = await channel.send({ embeds: [embedT], files: [file], components: [rowT] });
                     idTech = sent.id;
-                } else if(poolT[randT].question.includes('figure T-3')) {
+                } else if(poolT[randT].question.toUpperCase().includes('FIGURE T-3')) {
                     const file = new AttachmentBuilder('./resources/exams/T-3.png');
                     embedT.setImage('attachment://T-3.png');
                     let sent = await channel.send({ embeds: [embedT], files: [file], components: [rowT] });
@@ -243,7 +242,7 @@ module.exports = {
                             .setLabel('D')
                             .setStyle(ButtonStyle.Primary),
                     );
-                if(poolG[randG].question.includes('figure G7-1')) {
+                if(poolG[randG].question.toUpperCase().includes('FIGURE G7-1')) {
                     const file = new AttachmentBuilder('./resources/exams/G7-1.png');
                     embedG.setImage('attachment://G7-1.png');
                     let sent = await channel.send({ embeds: [embedG], files: [file], components: [rowG] });
@@ -280,52 +279,52 @@ module.exports = {
                             .setLabel('D')
                             .setStyle(ButtonStyle.Primary),
                     );
-                if(poolE[randE].question.includes('figure E5-1')) {
+                if(poolE[randE].question.toUpperCase().includes('FIGURE E5-1')) {
                     const file = new AttachmentBuilder('./resources/exams/E5-1.png');
                     embedE.setImage('attachment://E5-1.png');
                     let sent = await channel.send({ embeds: [embedE], files: [file], components: [rowE] });
                     idExtra = sent.id;
-                } else if(poolE[randE].question.includes('figure E6-1')) {
+                } else if(poolE[randE].question.toUpperCase().includes('FIGURE E6-1')) {
                     const file = new AttachmentBuilder('./resources/exams/E6-1.png');
                     embedE.setImage('attachment://E6-1.png');
                     let sent = await channel.send({ embeds: [embedE], files: [file], components: [rowE] });
                     idExtra = sent.id;
-                } else if(poolE[randE].question.includes('figure E6-2')) {
+                } else if(poolE[randE].question.toUpperCase().includes('FIGURE E6-2')) {
                     const file = new AttachmentBuilder('./resources/exams/E6-2.png');
                     embedE.setImage('attachment://E6-2.png');
                     let sent = await channel.send({ embeds: [embedE], files: [file], components: [rowE] });
                     idExtra = sent.id;
-                } else if(poolE[randE].question.includes('figure E6-3')) {
+                } else if(poolE[randE].question.toUpperCase().includes('FIGURE E6-3')) {
                     const file = new AttachmentBuilder('./resources/exams/E6-3.png');
                     embedE.setImage('attachment://E6-3.png');
                     let sent = await channel.send({ embeds: [embedE], files: [file], components: [rowE] });
                     idExtra = sent.id;
-                } else if(poolE[randE].question.includes('figure E7-1')) {
+                } else if(poolE[randE].question.toUpperCase().includes('FIGURE E7-1')) {
                     const file = new AttachmentBuilder('./resources/exams/E7-1.png');
                     embedE.setImage('attachment://E7-1.png');
                     let sent = await channel.send({ embeds: [embedE], files: [file], components: [rowE] });
                     idExtra = sent.id;
-                } else if(poolE[randE].question.includes('figure E7-2')) {
+                } else if(poolE[randE].question.toUpperCase().includes('FIGURE E7-2')) {
                     const file = new AttachmentBuilder('./resources/exams/E7-2.png');
                     embedE.setImage('attachment://E7-2.png');
                     let sent = await channel.send({ embeds: [embedE], files: [file], components: [rowE] });
                     idExtra = sent.id;
-                } else if(poolE[randE].question.includes('figure E7-3')) {
+                } else if(poolE[randE].question.toUpperCase().includes('FIGURE E7-3')) {
                     const file = new AttachmentBuilder('./resources/exams/E7-3.png');
                     embedE.setImage('attachment://E7-3.png');
                     let sent = await channel.send({ embeds: [embedE], files: [file], components: [rowE] });
                     idExtra = sent.id;
-                } else if(poolE[randE].question.includes('figure E9-1')) {
+                } else if(poolE[randE].question.toUpperCase().includes('FIGURE E9-1')) {
                     const file = new AttachmentBuilder('./resources/exams/E9-1.png');
                     embedE.setImage('attachment://E9-1.png');
                     let sent = await channel.send({ embeds: [embedE], files: [file], components: [rowE] });
                     idExtra = sent.id;
-                } else if(poolE[randE].question.includes('figure E9-2')) {
+                } else if(poolE[randE].question.toUpperCase().includes('FIGURE E9-2')) {
                     const file = new AttachmentBuilder('./resources/exams/E9-2.png');
                     embedE.setImage('attachment://E9-2.png');
                     let sent = await channel.send({ embeds: [embedE], files: [file], components: [rowE] });
                     idExtra = sent.id;
-                } else if(poolE[randE].question.includes('figure E9-3')) {
+                } else if(poolE[randE].question.toUpperCase().includes('FIGURE E9-3')) {
                     const file = new AttachmentBuilder('./resources/exams/E9-3.png');
                     embedE.setImage('attachment://E9-3.png');
                     let sent = await channel.send({ embeds: [embedE], files: [file], components: [rowE] });

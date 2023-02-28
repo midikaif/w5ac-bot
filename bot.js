@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Events, GatewayIntentBits, REST, Routes, EmbedBuilder, Collection } = require('discord.js');
 const examQuestion = require('./scheduled_scripts/exam-question');
+const roles = require('./scheduled_scripts/roles');
 
 let configFile = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
 
@@ -25,6 +26,7 @@ for (const file of commandFiles) {
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 	examQuestion.init(client, configFile);
+	roles.init(client, configFile);
 });
 
 client.on(Events.InteractionCreate, async interaction => {
@@ -43,6 +45,8 @@ client.on(Events.InteractionCreate, async interaction => {
 	} else if(interaction.isButton()) {
 		if(interaction.customId.includes('exam')) {
 			examQuestion.answers(interaction);
+		} else if(interaction.customId.includes('role')) {
+			roles.update(interaction);
 		}
 	}
 
