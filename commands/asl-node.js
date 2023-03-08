@@ -5,7 +5,7 @@ const signale = require('signale');
 signale.config({displayTimestamp: true, displayDate: true});
 
 // /allstar
-// Replies with license exam stats for the member mentioned or the user who ran the command
+// Replies with stats for allstar node or table of linkes used by the node
 
 module.exports = {
     data: new SlashCommandBuilder()
