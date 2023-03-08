@@ -1,6 +1,4 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, AttachmentBuilder, EmbedBuilder, RoleSelectMenuBuilder } = require('discord.js');
-const { sign } = require('node:crypto');
-const util = require('node:util');
 const signale = require('signale');
 
 signale.config({displayTimestamp: true, displayDate: true});

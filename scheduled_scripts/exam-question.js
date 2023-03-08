@@ -1,7 +1,12 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, AttachmentBuilder, EmbedBuilder } = require('discord.js');
 const CronJob = require('cron').CronJob;
 const fs = require('node:fs');
-const util = require('node:util');
+const signale = require('signale');
+
+signale.config({displayTimestamp: true, displayDate: true});
+
+// License exam questions bot
+// Posts daily license questions in channel configured by config file and updates answer file based on button reactions
 
 module.exports = {
     configFile: null,
@@ -12,19 +17,25 @@ module.exports = {
         this.questions();
         this.updateCorrect();
     },
+    // Post questions
     questions: async function() {
+        // Load exam channel and exam pools from file
         let channel = this.client.channels.cache.find(ch => ch.name === this.configFile.exam_chan);
         var poolT = JSON.parse(fs.readFileSync('./resources/exams/technician.json', 'utf8'));
         var poolG = JSON.parse(fs.readFileSync('./resources/exams/general.json', 'utf8'));
         var poolE = JSON.parse(fs.readFileSync('./resources/exams/extra.json', 'utf8'));
         
+        // Every day at 6 and 18 hours, run the function
         const job = new CronJob('0 0 6,18 * * *', async function() {
+            // Close old questions and post answers. If no previous questions exist, fail gracefully
             try {
+                // Find old messages from data storage file
                 var questions = JSON.parse(fs.readFileSync('./resources/exams/questions.json', 'utf8'));
                 let oldT = await channel.messages.fetch(questions[questions.length - 1].idTech);
                 let oldG = await channel.messages.fetch(questions[questions.length - 1].idGeneral);
                 let oldE = await channel.messages.fetch(questions[questions.length - 1].idExtra);
 
+                // For each pool, find the question identifier
                 var questionT = '';
                 for(var i = 0; i < oldT.embeds[0].fields.length; i++) {
                     if(oldT.embeds[0].fields[i].name == 'Question') {
@@ -44,6 +55,7 @@ module.exports = {
                     }
                 }
 
+                // For each pool, find the correct answer choice
                 var answerChoices = ['a', 'b', 'c', 'd']
                 var answerCorrectT = '';
                 var answerCorrectG = '';
@@ -64,6 +76,7 @@ module.exports = {
                     }
                 }
 
+                // Build new button row with 4 disabled buttons that default to red for incorrect
                 var rowTU = new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
@@ -134,6 +147,7 @@ module.exports = {
                         .setDisabled(true)
                 );
 
+                // For each pool, set the correct answer to success for green color
                 for(var i = 0; i < rowTU.components.length; i++) {
                     if(rowTU.components[i].data.label.includes(answerCorrectT.toUpperCase())) {
                         rowTU.components[i].setStyle(ButtonStyle.Success);
@@ -150,24 +164,33 @@ module.exports = {
                     }
                 }
 
+                // Post new button rows
                 oldT.edit({ components: [rowTU] });
                 oldG.edit({ components: [rowGU] });
                 oldE.edit({ components: [rowEU] });
 
-                // For some reason, I can't do this.updateCorrect() here, but can do it in init()
+                //TODO: Add message congratulating those who were correct
+                
+                // Update player count of correct answers
                 module.exports.updateCorrect();
-            } catch(e) {
-                console.log(e);
+            } catch(error) {
+                signale.error(error);
             }
+
+            // Send out questions for next round
             try {
                 channel.send(`Questions for ${new Date().toLocaleDateString()}`);
                 var idTech = '';
                 var idGeneral = '';
                 var idExtra = '';
+                
+                // Pick random questions from pool
                 var randT = Math.floor(Math.random() * poolT.length);
                 var randG = Math.floor(Math.random() * poolG.length);
                 var randE = Math.floor(Math.random() * poolE.length);
             
+                // Technician Pool
+                // Build embed with question and answer choices
                 var embedT = new EmbedBuilder()
                     .setColor(0x500000)
                     .setTitle('Technician question')
@@ -175,7 +198,8 @@ module.exports = {
                         { name: 'Question', value: `[${poolT[randT].id}] ${poolT[randT].question}` },
                         { name: 'Answers', value: `A. ${poolT[randT].answers[0]}\nB. ${poolT[randT].answers[1]}\nC. ${poolT[randT].answers[2]}\nD. ${poolT[randT].answers[3]}\n`}
                     )
-                
+
+                // Button row for answer choices
                 const rowT = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
@@ -195,6 +219,8 @@ module.exports = {
                             .setLabel('D')
                             .setStyle(ButtonStyle.Primary),
                     );
+
+                // If question has figure attached, add to embed and send. If no figure, send out message
                 if(poolT[randT].question.toUpperCase().includes('FIGURE T-1')) {
                     const file = new AttachmentBuilder('./resources/exams/T-1.png');
                     embedT.setImage('attachment://T-1.png');
@@ -215,6 +241,8 @@ module.exports = {
                     idTech = sent.id;
                 }
 
+                // General Pool
+                // Build embed with question and answer choices
                 var embedG = new EmbedBuilder()
                     .setColor(0x500000)
                     .setTitle('General question')
@@ -222,7 +250,8 @@ module.exports = {
                         { name: 'Question', value: `[${poolG[randG].id}] ${poolG[randG].question}` },
                         { name: 'Answers', value: `A. ${poolG[randG].answers[0]}\nB. ${poolG[randG].answers[1]}\nC. ${poolG[randG].answers[2]}\nD. ${poolG[randG].answers[3]}\n`}
                     )
-            
+
+                // Button row for answer choices
                 const rowG = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
@@ -242,6 +271,8 @@ module.exports = {
                             .setLabel('D')
                             .setStyle(ButtonStyle.Primary),
                     );
+                
+                // If question has figure attached, add to embed and send. If no figure, send out message
                 if(poolG[randG].question.toUpperCase().includes('FIGURE G7-1')) {
                     const file = new AttachmentBuilder('./resources/exams/G7-1.png');
                     embedG.setImage('attachment://G7-1.png');
@@ -252,6 +283,8 @@ module.exports = {
                     idGeneral = sent.id;
                 }
 
+                // Extra Pool
+                // Build embed with question and answer choices
                 var embedE = new EmbedBuilder()
                     .setColor(0x500000)
                     .setTitle('Extra question')
@@ -259,7 +292,8 @@ module.exports = {
                         { name: 'Question', value: `[${poolE[randE].id}] ${poolE[randE].question}` },
                         { name: 'Answers', value: `A. ${poolE[randE].answers[0]}\nB. ${poolE[randE].answers[1]}\nC. ${poolE[randE].answers[2]}\nD. ${poolE[randE].answers[3]}\n`}
                     )
-            
+
+                // Button row for answer choices
                 const rowE = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
@@ -279,6 +313,8 @@ module.exports = {
                             .setLabel('D')
                             .setStyle(ButtonStyle.Primary),
                     );
+
+                // If question has figure attached, add to embed and send. If no figure, send out message
                 if(poolE[randE].question.toUpperCase().includes('FIGURE E5-1')) {
                     const file = new AttachmentBuilder('./resources/exams/E5-1.png');
                     embedE.setImage('attachment://E5-1.png');
@@ -333,19 +369,24 @@ module.exports = {
                     let sent = await channel.send({ embeds: [embedE], components: [rowE] });
                     idExtra = sent.id;
                 }
-                
+
+                // Add current question id to storage to be able to fetch id to close the question
                 const today = new Date().toISOString().slice(0, 10)
                 questions.push({'date': today, 'idTech': idTech, 'idGeneral': idGeneral, 'idExtra': idExtra})
                 fs.writeFile('./resources/exams/questions.json', JSON.stringify(questions, null, 2), function writeJSON(err) {
                     if (err) return console.log(err);
                     JSON.stringify(questions, null, 2);
                 });
-            } catch(e) {
-                console.log(e);
+            } catch(error) {
+                signale.error(error);
             }
         });
+
+        // Start scheduled script
         job.start();
     },
+
+    // Handle button press answers
     answers: function(interaction) {
         // Load records and get today's date
         var poolT = JSON.parse(fs.readFileSync('./resources/exams/technician.json', 'utf8'));
@@ -360,6 +401,7 @@ module.exports = {
         var pool = interaction.customId.split('-')[1];
         var answer = interaction.customId.split('-')[2];
 
+        // Find question the button was pressed on
         var fields = interaction.message.embeds[0].fields;
         var question = '';
         for(var i = 0; i < fields.length; i++) {
@@ -368,6 +410,7 @@ module.exports = {
             }
         }
 
+        // Find the correct answer choice
         var answerChoices = ['a', 'b', 'c', 'd']
         var answerCorrect = '';
         if(question[0] == 'T') {
@@ -389,7 +432,7 @@ module.exports = {
                 }
             }
         } else {
-            console.log('Unknown question');
+            signale.debug(`Unknown question [${question}] answered`);
         }
 
         // Find user if they have answered in the past
@@ -422,17 +465,26 @@ module.exports = {
                 answerList.push({'date': today, 'pool': pool, 'question': question, 'answerCorrect': answerCorrect, 'answer': answer})
             }
         } else {
+            // If never answered, add new player
             answers.push({'id': user, 'nickname': name, 'correct': 0, 'answered': 0, 'answers': [{'date': today, 'pool': pool, 'question': question, 'answerCorrect': answerCorrect, 'answer': answer}]})
         }
 
+        // Write changes to answer storage
         fs.writeFile('./resources/exams/answers.json', JSON.stringify(answers, null, 2), function writeJSON(err) {
             if (err) return console.log(err);
             JSON.stringify(answers, null, 2);
         });
+        
+        // Update player with confirmation message
         interaction.reply({ content: `Answer ${answer.toUpperCase()} recorded for question [${question}]`, ephemeral: true })
     },
+
+    // Update number of correct answers for each player
     updateCorrect: async function() {
+        // Load answer file
         var answers = JSON.parse(fs.readFileSync('./resources/exams/answers.json', 'utf8'));
+
+        // For each player, tally number of correct answers and modify attribute
         for(var i = 0; i < answers.length; i++) {
             var correct = 0;
             for(var j = 0; j < answers[i].answers.length; j++) {
@@ -443,8 +495,12 @@ module.exports = {
             answers[i].answered = answers[i].answers.length;
             answers[i].correct = correct;
         }
-        fs.writeFile('./resources/exams/answers.json', JSON.stringify(answers, null, 2), function writeJSON(err) {
-            if (err) return console.log(err);
+
+        // Write changes to answer file
+        fs.writeFile('./resources/exams/answers.json', JSON.stringify(answers, null, 2), function writeJSON(error) {
+            if(error) {
+                signale.error(error);
+            }
             JSON.stringify(answers, null, 2);
         });
     }
