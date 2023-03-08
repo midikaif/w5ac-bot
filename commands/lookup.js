@@ -64,6 +64,7 @@ module.exports = {
                     break;
             }
 
+            //embed the edited reply
             const embed = new EmbedBuilder()
                 .setColor(0x500000)
                 .setTitle(`Record for ${get.hamdb.callsign.call}`)
