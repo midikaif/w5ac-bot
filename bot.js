@@ -54,7 +54,8 @@ client.on(Events.InteractionCreate, async interaction => {
 			return;
 		}
 		try {
-			signale.debug(`Command ${interaction.commandName} by user ${interaction.guild.members.cache.find(member => member.id === interaction.user.id).displayName}`);
+			var user = interaction.guild != null ? interaction.guild.members.cache.find(member => member.id === interaction.user.id).displayName : interaction.user.username;
+			signale.debug(`Command ${interaction.commandName} by user ${user}`);
 			await command.execute(interaction);
 		} catch(error) {
 			signale.error(error);
