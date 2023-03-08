@@ -356,7 +356,7 @@ module.exports = {
 
         // Get button press information
         var user = interaction.user.id;
-        var name = interaction.user.username ?? 'Unknown';
+        var name = interaction.guild.members.cache.find(member => member.id === interaction.user.id).displayName;
         var pool = interaction.customId.split('-')[1];
         var answer = interaction.customId.split('-')[2];
 
@@ -403,7 +403,7 @@ module.exports = {
 
         if(index != -1) {
             // If they have answered in the past, update username if it was unknown
-            if(answers[i].nickname == 'Unknown' && name != 'Unknown') {
+            if(answers[i].nickname != name) {
                 answers[i].nickname = name;
             }
 
@@ -429,7 +429,7 @@ module.exports = {
             if (err) return console.log(err);
             JSON.stringify(answers, null, 2);
         });
-        interaction.reply({ content: 'Answer Recorded', ephemeral: true })
+        interaction.reply({ content: `Answer ${answer.toUpperCase()} recorded for question [${question}]`, ephemeral: true })
     },
     updateCorrect: async function() {
         var answers = JSON.parse(fs.readFileSync('./resources/exams/answers.json', 'utf8'));

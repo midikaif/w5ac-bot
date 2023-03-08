@@ -26,6 +26,9 @@ module.exports = {
             return;
         } else {
             try {
+                if(answers[i].nickname != interaction.guild.members.cache.find(member => member.id === interaction.user.id).displayName) {
+                    answers[i].nickname = interaction.guild.members.cache.find(member => member.id === interaction.user.id).displayName;
+                }
                 var playerAnswers = answers[playerIndex].answers;
                 var answeredTech = 0;
                 var answeredGeneral = 0;
