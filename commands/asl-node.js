@@ -1,6 +1,11 @@
 const { SlashCommandBuilder, EmbedBuilder, parseResponse } = require('discord.js');
 const { table } = require('table');
-const http = require('http');
+const signale = require('signale');
+
+signale.config({displayTimestamp: true, displayDate: true});
+
+// /allstar
+// Replies with stats for allstar node or table of linkes used by the node
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -24,7 +29,6 @@ module.exports = {
         switch(interaction.options.getString('category') ?? 'unknown') {
             case 'stats':
                 try {
-                    var options = {method: 'GET', host: 'https://stats.allstarlink.org', port: 443, path: `/api/stats/${node}`};
                     var stats = await fetch(`http://stats.allstarlink.org/api/stats/${node}`).then((res) => res.json());
                     var statsEmbed = new EmbedBuilder()
                         .setColor(0x79A737)
@@ -34,13 +38,12 @@ module.exports = {
                         .setImage(`https://stats.allstarlink.org/stats/${stats.stats.node}/networkMap`)
                         .setTimestamp()
                     await interaction.followUp({embeds: [statsEmbed]});
-                } catch(e) {
-                    console.log(e);
+                } catch(error) {
+                    signale.error(error);
                 }
                 break;
             case 'links':
                 try {
-                    var options = {method: 'GET', host: 'https://stats.allstarlink.org', port: 443, path: `/api/stats/${node}`};
                     var stats = await fetch(`http://stats.allstarlink.org/api/stats/${node}`).then((res) => res.json());
                     var statsEmbed = new EmbedBuilder()
                         .setColor(0x79A737)
@@ -57,8 +60,8 @@ module.exports = {
                         linkNodes.push([linkedNode, linkedCallsign, linkedLocation])
                     }
                     await interaction.followUp('\`\`\`' + table(linkNodes).toString() + '\`\`\`');
-                } catch(e) {
-                    console.log(e);
+                } catch(error) {
+                    signale.error(error);
                 }
                 break;
             default:

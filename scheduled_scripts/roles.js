@@ -1,5 +1,10 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, AttachmentBuilder, EmbedBuilder, RoleSelectMenuBuilder } = require('discord.js');
-const util = require('node:util');
+const signale = require('signale');
+
+signale.config({displayTimestamp: true, displayDate: true});
+
+// Role bot
+// Posts role message in channel specified by config. Updates member roles based on button interaction
 
 module.exports = {
     configFile: null,
@@ -10,33 +15,37 @@ module.exports = {
         // this.roleMessage();
     },
     roleMessage: async function() {
-        let channel = this.client.channels.cache.find(ch => ch.name === this.configFile.role_chan);
-        const row = new ActionRowBuilder()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId('role-class-tech')
-                    .setLabel('Technician')
-                    .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setCustomId('role-class-general')
-                    .setLabel('General')
-                    .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setCustomId('role-class-extra')
-                    .setLabel('Extra')
-                    .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setCustomId('role-extra-net')
-                    .setLabel('Net Controller')
-                    .setStyle(ButtonStyle.Primary),
-            );
+        try {
+            let channel = this.client.channels.cache.find(ch => ch.name === this.configFile.role_chan);
+            const row = new ActionRowBuilder()
+                .addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('role-class-tech')
+                        .setLabel('Technician')
+                        .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
+                        .setCustomId('role-class-general')
+                        .setLabel('General')
+                        .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
+                        .setCustomId('role-class-extra')
+                        .setLabel('Extra')
+                        .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
+                        .setCustomId('role-extra-net')
+                        .setLabel('Net Controller')
+                        .setStyle(ButtonStyle.Primary),
+                );
 
-		const embed = new EmbedBuilder()
-			.setColor(0x500000)
-			.setTitle('Roles')
-			.setDescription('Click the roles that corespond to your license class and optional channels');
+            const embed = new EmbedBuilder()
+                .setColor(0x500000)
+                .setTitle('Roles')
+                .setDescription('Click the roles that corespond to your license class and optional channels');
 
-		await channel.send({embeds: [embed], components: [row] });
+            await channel.send({embeds: [embed], components: [row] });
+        } catch(error) {
+            signale.error(error);
+        }
     },
     update: async function(interaction) {
         await interaction.deferReply({ephemeral: true});
@@ -46,8 +55,8 @@ module.exports = {
                     try {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Technician"));
                         await interaction.followUp({ content: 'Successfully removed role!', ephemeral: true });
-                    } catch(e) {
-                        break;
+                    } catch(error) {
+                        signale.error(error);
                     }
                 } else {
                     try {
@@ -55,8 +64,8 @@ module.exports = {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "General"));
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Extra"));
                         await interaction.followUp({ content: 'Successfully added role!', ephemeral: true });
-                    } catch(e) {
-                        break;
+                    } catch(error) {
+                        signale.error(error);
                     }
                 }
                 break;
@@ -65,8 +74,8 @@ module.exports = {
                     try {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "General"));
                         await interaction.followUp({ content: 'Successfully removed role!', ephemeral: true });
-                    } catch(e) {
-                        break;
+                    } catch(error) {
+                        signale.error(error);
                     }
                 } else {
                     try {
@@ -74,8 +83,8 @@ module.exports = {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Technician"));
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Extra"));
                         await interaction.followUp({ content: 'Successfully added role!', ephemeral: true });
-                    } catch(e) {
-                        break;
+                    } catch(error) {
+                        signale.error(error);
                     }
                 }
                 break;
@@ -84,8 +93,8 @@ module.exports = {
                     try {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Extra"));
                         await interaction.followUp({ content: 'Successfully removed role!', ephemeral: true });
-                    } catch(e) {
-                        break;
+                    } catch(error) {
+                        signale.error(error);
                     }
                 } else {
                     try {
@@ -93,8 +102,8 @@ module.exports = {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Technician"));
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "General"));
                         await interaction.followUp({ content: 'Successfully added role!', ephemeral: true });
-                    } catch(e) {
-                        break;
+                    } catch(error) {
+                        signale.error(error);
                     }
                 }
                 break;
@@ -103,8 +112,8 @@ module.exports = {
                     try {
                         interaction.member.roles.remove(interaction.guild.roles.cache.find(role => role.name === "Net Controller"));
                         await interaction.followUp({ content: 'Successfully removed role!', ephemeral: true });
-                    } catch(e) {
-                        break;
+                    } catch(error) {
+                        signale.error(error);
                     }
                 } else {
                     try {
@@ -114,13 +123,14 @@ module.exports = {
                         } else {
                             await interaction.followUp({ content: 'Only W5AC members can be net controllers', ephemeral: true })
                         }
-                    } catch(e) {
-                        break;
+                    } catch(error) {
+                        signale.error(error);
                     }
                 }
                 break;
             default:
                 await interaction.followUp({ content: 'Can\'t find role', ephemeral: true});
+                signale.debug(`Role button id ${interaction.customId} not found`);
         }
     }
    };
