@@ -58,7 +58,7 @@ module.exports = {
         }
 
         const embed = new EmbedBuilder()
-            .setColor(0x3C0000)
+            .setColor(0x500000)
             .setTitle(`Record for ${get.hamdb.callsign.call}`)
             .setDescription(`[See ${get.hamdb.callsign.call} on QRZ](https://www.qrz.com/db/?callsign=${get.hamdb.callsign.call})`)
             .setAuthor({ name: "HamDB Database"})
