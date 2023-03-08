@@ -11,7 +11,8 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('daily-question-stats')
         .setDescription('Gets player statistics for daily license question')
-        .addUserOption(option => option.setName('user')
+        .addUserOption(option =>
+            option.setName('user')
             .setDescription('The user to find stats for')),
     async execute(interaction) {
         // Load answers file and find index of current user
