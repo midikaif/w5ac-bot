@@ -13,7 +13,7 @@ const roles = require('./scheduled_scripts/roles');
 var configFile;
 signale.config({displayTimestamp: true, displayDate: true});
 try {
-    configFile = JSON.parse(fs.readFileSync('secrets_5XB.json', 'utf8'));
+    configFile = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
 } catch(error) {
     signale.error(error);
 }
