@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const signale = require('signale');
-const {Client, Events, GatewayIntentBits, REST, Routes, EmbedBuilder, Collection} = require('discord.js');
+const { Client, Events, GatewayIntentBits, REST, Routes, EmbedBuilder, Collection } = require('discord.js');
 
 // Scheduled scripts
 const examQuestion = require('./scheduled_scripts/exam-question');
@@ -11,7 +11,7 @@ const roles = require('./scheduled_scripts/roles');
 
 // Config
 var configFile;
-signale.config({displayTimestamp: true, displayDate: true});
+signale.config({ displayTimestamp: true, displayDate: true });
 try {
     configFile = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
 } catch(error) {
@@ -20,6 +20,7 @@ try {
 
 // Discord client
 const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers]});
+
 
 // Load Discord commands from .js files in commands directory
 client.commands = new Collection();
@@ -113,6 +114,21 @@ client.on('messageDelete', async message => {
     } catch(error) {
         signale.error(error);
     }
+	signale.debug(`Message by ${message.guild.members.cache.find(member => member.id === message.author.id).displayName} deleted in #${message.channel.name}`);
+	try {
+		if (message.author.bot) return;
+		if (message.content === '') return;
+		let channel = client.channels.cache.find(ch => ch.name === configFile.log_chan);
+		const embed = new EmbedBuilder()
+			.setColor(0xFF0000)
+			.setTitle(`:wastebasket: Message Delete in #${message.channel.name}`)
+			.setAuthor({ name: message.author.username })
+			.setDescription(`Deleted on ${new Date().toString()}`)
+			.addFields({ name: 'Message content', value: `\`\`\`${message.content}\`\`\`` });
+		channel.send({ embeds: [embed] });
+	} catch (error) {
+		signale.error(error);
+	}
 });
 
 // Run the bot
